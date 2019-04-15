@@ -10,7 +10,7 @@ This json file allows for more advanced configuration management for different p
 ## Installation
 Using composer:
 ```
-composer global require "charlretief/build-env":"^1.0"
+composer global require "charlretief/build-env":"^1.1"
 ```
 
 ## Creating a .env.json file for a project
