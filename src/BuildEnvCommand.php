@@ -171,7 +171,7 @@ TEMPLATE;
                 $tmpfile = basename(tempnam(getcwd(), '.pinned'));
                 
                 if (file_put_contents($tmpfile, $pinned) === false) {
-                    $io->writeError('<error>Failed to tmp file, make sure the current directory is writable</error>');
+                    $io->writeError('<error>Failed to create tmp file, make sure the current directory is writable</error>');
                     exit(1);
                 }
                 
@@ -228,7 +228,7 @@ TEMPLATE;
             $io->writeError('<info>Reading defaults from: ' . $defaulsFile . '</info>');
             
             if (($this->defaults = file_get_contents($defaulsFile)) === false) {
-                $io->writeError('<error>Error defaults file</error>');
+                $io->writeError('<error>Failed reading defaults file</error>');
                 exit(1);                
             }
 
