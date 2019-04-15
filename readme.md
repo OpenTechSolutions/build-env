@@ -61,11 +61,15 @@ To create local pinned values simply add them to the bottom of any generated .en
 	DB_USERNAME="root"
 	DB_PASSWORD="password123"
 
-Don't worry if your pinned values duplicates any keys that is also in the generated portion of the file. The value of the last occurence of any key is always used.
+After adding pinned values run `composer build-env` again. It will then comment out the same variables in the generated portion of the file to prevent duplicate keys in the file.
 				
 ### Advanced Usage #2 - Defaults file
 
 A defaults file is a json formatted file, that allows for overriding keys in the .env.json with default values.
+
+This is useful for CI/CD processes that need to always set the same hostnames in all .env files.
+It can also function as an alternative to pinned values for secrets management for things like database credentials that you do not want to commit into vcs.
+
 For example to always override your DB_HOST create a file `.env.defaults` with content:
 
 	{
