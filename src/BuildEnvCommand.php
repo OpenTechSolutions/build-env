@@ -51,7 +51,11 @@ class BuildEnvCommand extends BaseCommand
         $io->writeError('<info>Building .env for ' . $targetEnvironment . ' environment</info>');
         $this->readDefaults($input, $io);            
         
-        $env = file_get_contents('.env.json');
+        if (($env = file_get_contents('.env.json')) === false) {
+            $io->writeError('<error>Failed reading .env.json file</error>');
+            exit(1);
+        }
+        
         $env = json_decode($env, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -150,7 +154,10 @@ TEMPLATE;
 TEMPLATE;
 
         if (file_exists('.env')) {
-            $env = file_get_contents('.env');           
+            if (($env = file_get_contents('.env')) === false) {
+                $io->writeError('<error>Failed reading .env file</error>');
+                exit(1);
+            }
             $pos = strpos($env, $header);
             if ($pos > 0) {
                 $pinned = "\n" . substr($env, $pos);
@@ -158,7 +165,7 @@ TEMPLATE;
         }
         
         if (empty($pinned)) {
-            $pinned = "\n" . $header . "\n\n#DB_USERNAME=\"root\"\n#DB_PASSWORD=\"\"";
+            $pinned = "\n" . $header . "\n\n#DB_USERNAME=\"root\"\n#DB_PASSWORD=\"\"\n";
         }
 
         return $pinned;
@@ -203,8 +210,17 @@ TEMPLATE;
         if (file_exists($defaulsFile)) {
             $io->writeError('<info>Reading defaults from: ' . $defaulsFile . '</info>');
             
-            $dotenv = Dotenv\Dotenv::create(getcwd(), $defaulsFile, new Dotenv\Environment\DotenvFactory([]));
-            $this->defaults = $dotenv->load();
+            if (($this->defaults = file_get_contents($defaulsFile)) === false) {
+                $io->writeError('<error>Error defaults file</error>');
+                exit(1);                
+            }
+
+            $this->defaults = json_decode($this->defaults, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $io->writeError('<error>Defaults file must be valid json file. Getting json error: ' . json_last_error_msg() . '</error>');
+                exit(1);
+            }
         }
     }
     

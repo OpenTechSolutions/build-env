@@ -20,15 +20,15 @@ When you first run `composer build-env` on a project, if there is an .env.exampl
 
 In the .env.json file a key can have either a single value, then this value is used in all builds:
 
-			"APP_NAME": "Hello World",
+		"APP_NAME": "Hello World",
 			
 Or a key can have an array of values, specifying different values for each environment:
 			
-			"APP_URL": {
-				"local": "http:\/\/app.local"
-				"staging": "http:\/\/staging.example.com"
-				"production": "http:\/\/app.example.com"
-			},
+		"APP_URL": {
+			"local": "http:\/\/app.local"
+			"staging": "http:\/\/staging.example.com"
+			"production": "http:\/\/app.example.com"
+		},
 
 New and updated .env values should be added to .env.json and committed into your vcs.
 After updating .env.json run "composer build-env" to re-build your .env file.
@@ -65,9 +65,13 @@ Don't worry if your pinned values duplicates any keys that is also in the genera
 				
 ### Advanced Usage #2 - Defaults file
 
-A defaults file allows for overriding keys in the .env.json with default values.
+A defaults file is a json formatted file, that allows for overriding keys in the .env.json with default values.
+For example to always override your DB_HOST create a file `.env.defaults` with content:
 
-For example to always override your DB_HOST create a file `.env.defaults` with `DB_HOST="127.0.0.1"`.
+	{
+		"DB_HOST": "127.0.0.1"
+	}
+
 Then the generated .env file will always have this value for DB_HOST.
 
 		composer build-env local .env.defaults
@@ -84,7 +88,7 @@ Example:
 
 		"CONTACT_EMAIL": "{{EMAIL}}",
 		"APP_URL": {
-			"local": "http:\/\/local.{{DEV_TLD}}",
+			"local": "http:\/\/{{myvar}}.local",
 			"staging": "http:\/\/staging.example.com",
 			"production": "http:\/\/app.example.com"
 		},
