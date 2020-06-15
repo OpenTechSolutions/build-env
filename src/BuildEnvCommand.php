@@ -197,10 +197,11 @@ TEMPLATE;
             $io->writeError('<error>Defaults is not a valid file</error>');
             exit(1);
         }
-        
+
         $defaulsFile = dirname(dirname(__DIR__)) . '/.env.' . $targetEnvironment . '.defaults';
-       
+
         if ($input->getOption('set-defaults')) {
+
             if (is_link($defaulsFile)) {
                 unlink($defaulsFile);
             }
@@ -226,7 +227,11 @@ TEMPLATE;
         
         if (file_exists($defaulsFile)) {
             $io->writeError('<info>Reading defaults from: ' . $defaulsFile . '</info>');
-            
+
+            $dotenv = Dotenv\Dotenv::create('/', $defaulsFile, new Dotenv\Environment\DotenvFactory([]));
+            $this->defaults = $dotenv->load();
+            print_r($this->defaults);
+exit;
             if (($this->defaults = file_get_contents($defaulsFile)) === false) {
                 $io->writeError('<error>Failed reading defaults file</error>');
                 exit(1);                
