@@ -17,7 +17,7 @@ class BuildEnvCommand extends BaseCommand
     protected $env = [];
     protected $defaults = [];
     protected $pinnedKeys = [];
-    protected $pinnedValues = [];
+    protected $pinnedValues = '';
 
     protected function configure()
     {
@@ -193,7 +193,7 @@ TEMPLATE;
 
                 $sectionBlock = preg_replace('/^#/m', '', $sectionBlock);
 
-                $tmpfile = basename(tempnam(getcwd(), '.' . $environment));
+                $tmpfile = basename(tempnam(getcwd(), '.tmp-' . $environment));
                 if (file_put_contents($tmpfile, $sectionBlock) === false) {
                     $this->io->writeError('<error>Failed to create tmp file, make sure the current directory is writable</error>');
                     exit(1);
@@ -281,6 +281,10 @@ TEMPLATE;
 
     protected function getPinnedValues()
     {
+        $this->pinnedKeys = [];
+        $this->pinnedValues = '#DB_USERNAME="root"' . PHP_EOL;
+        $this->pinnedValues .= '#DB_PASSWORD=""' . PHP_EOL;
+
         if (!file_exists('.env')) {
             return;
         }
@@ -292,16 +296,13 @@ TEMPLATE;
 
         preg_match_all('/#{8,256}\n#\sLocal\spinned\svalues\s+#\n#{8,256}/', $env, $matches,PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
         if (empty($matches)) {
-            $this->pinnedKeys = [];
-            $this->pinnedValues = '#DB_USERNAME="root"' . PHP_EOL;
-            $this->pinnedValues .= '#DB_PASSWORD=""' . PHP_EOL;
             return;
         }
 
         $sectionStart = $matches[0][0][1] + strlen($matches[0][0][0]);
         $this->pinnedValues = trim(substr($env, $sectionStart));
 
-        $tmpfile = basename(tempnam(getcwd(), '.pinned'));
+        $tmpfile = basename(tempnam(getcwd(), '.tmp-pinned'));
         if (file_put_contents($tmpfile, $this->pinnedValues) === false) {
             $this->io->writeError('<error>Failed to create tmp file, make sure the current directory is writable</error>');
             exit(1);
