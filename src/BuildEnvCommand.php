@@ -16,6 +16,7 @@ class BuildEnvCommand extends BaseCommand
 
     protected $env = [];
     protected $defaults = [];
+    protected $defaultsFile = '';
     protected $pinnedKeys = [];
     protected $pinnedValues = '';
 
@@ -265,16 +266,17 @@ TEMPLATE;
         }
 
         if (file_exists($defaultsFile)) {
-            $this->io->writeError('<info>Reading defaults from: ' . $defaultsFile . '</info>');
+            $this->defaultsFile = $defaultsFile;
+            $this->io->writeError('<info>Reading defaults from: ' . $this->defaultsFile . '</info>');
 
             // .env.json backwards compatibility
-            $jsonDefaults = json_decode(file_get_contents($defaultsFile), true);
+            $jsonDefaults = json_decode(file_get_contents($this->defaultsFile), true);
             if (json_last_error() === JSON_ERROR_NONE) {
                 $this->defaults = $jsonDefaults;
                 return;
             }
 
-            $dotenv = Dotenv\Dotenv::createMutable('/', realpath($defaultsFile));
+            $dotenv = Dotenv\Dotenv::createMutable('/', realpath($this->defaultsFile));
             $this->defaults = $dotenv->load();
         }
     }
@@ -343,9 +345,17 @@ TEMPLATE;
 # Values in this file can be pinned to not be overwritten by   #
 # "composer build-env". Add local pinned values only in the    #
 # designated block below.                                      #
-################################################################
+#                                                              #
 
 TEMPLATE;
+
+        $compiledEnv .= sprintf('# Generate on %s for environment %-12s #' . PHP_EOL, date('Y-m-d H:i:s'), $targetEnvironment);
+
+        if (!empty($this->defaultsFile)) {
+            $compiledEnv .= sprintf('# Using defaults file %-40s #' . PHP_EOL, $this->defaultsFile);
+        }
+
+        $compiledEnv .= '################################################################' . PHP_EOL;
 
         if (!empty($this->env)) {
             $keyGroup = '';
