@@ -380,6 +380,10 @@ TEMPLATE;
                     }
                 }
 
+                if ($value === '') {
+                    continue;
+                }
+
                 $compiledEnv .= $this->printValue($key, $value);
             }
         }
