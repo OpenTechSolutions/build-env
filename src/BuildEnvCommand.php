@@ -373,15 +373,15 @@ TEMPLATE;
                 } elseif (is_array($value)) {
                     if (isset($value[$targetEnvironment])) {
                         $value = $value[$targetEnvironment];
+
+                        if ($value === '') {
+                            continue;
+                        }
                     } elseif (isset($value['local'])) {
                         $value = $value['local'];
                     } else {
                         continue;
                     }
-                }
-
-                if ($value === '') {
-                    continue;
                 }
 
                 $compiledEnv .= $this->printValue($key, $value);
