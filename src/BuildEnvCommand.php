@@ -103,7 +103,7 @@ TEMPLATE;
 
                 if (is_array($value)) {
                     foreach ($value as $k => $v) {
-                        if ($k === 'local') {
+                        if ($k === 'default') {
                             $compiledEnv .= $this->printValue($key, $v);
                         } else {
                             $otherEnvironments[$k][$key] = $v;
@@ -115,8 +115,14 @@ TEMPLATE;
             }
         }
 
+        $order = ['local' => '', 'testing' => '', 'staging' => '', 'production' => ''];
+        $otherEnvironments = array_merge($order, $otherEnvironments);
+
         if (!empty($otherEnvironments)) {
             foreach ($otherEnvironments as $environment => $values) {
+                if (empty($values)) {
+                    continue;
+                }
                 $compiledEnv .= <<<TEMPLATE
 
 
@@ -205,7 +211,7 @@ TEMPLATE;
 
                 foreach ($tmpEnv as $k => $v) {
                     if (isset($this->env[$k]) && is_string($this->env[$k])) {
-                        $this->env[$k] = ['local' => $this->env[$k]];
+                        $this->env[$k] = ['default' => $this->env[$k]];
                     }
 
                     $this->env[$k][$environment] = $v;
@@ -214,14 +220,14 @@ TEMPLATE;
         }
 
         if (isset($this->env['APP_ENV']) && is_string($this->env['APP_ENV'])) {
-            $this->env['APP_ENV'] = ['local' => 'local',
+            $this->env['APP_ENV'] = ['default' => 'local',
                                     'testing' => 'testing',
                                     'staging' => 'staging',
                                     'production' => 'production'];
         }
 
         if (isset($this->env['APP_DEBUG']) && is_string($this->env['APP_DEBUG'])) {
-            $this->env['APP_DEBUG'] = ['local' => true,
+            $this->env['APP_DEBUG'] = ['default' => true,
                                     'testing' => true,
                                     'staging' => false,
                                     'production' => false];
@@ -377,8 +383,8 @@ TEMPLATE;
                         if ($value === '') {
                             continue;
                         }
-                    } elseif (isset($value['local'])) {
-                        $value = $value['local'];
+                    } elseif (isset($value['default'])) {
+                        $value = $value['default'];
                     } else {
                         continue;
                     }
