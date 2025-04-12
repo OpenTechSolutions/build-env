@@ -6,7 +6,7 @@ Also supports dynamic variables and environment defaults in ENV values.
 ## Installation
 Using composer:
 
-    composer global require "charlretief/build-env":"^2"
+    composer global require "charlretief/build-env":"^3"
 
 
 ## Usage

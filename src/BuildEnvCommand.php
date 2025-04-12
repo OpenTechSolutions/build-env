@@ -3,7 +3,7 @@
 namespace BuildEnv\Composer;
 
 use Composer\Command\BaseCommand;
-use Dotenv;
+use Dotenv\Dotenv;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -181,7 +181,7 @@ TEMPLATE;
             }
         }
 
-        $dotenv = Dotenv\Dotenv::createMutable(getcwd(), '.env.example');
+        $dotenv = Dotenv::createMutable(getcwd(), '.env.example');
         $this->env = $dotenv->load();
 
         preg_match_all('/#{8,256}\n#\sAPP_ENV=(.*?)\n#{8,256}/', $exampleFile, $matches,PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
@@ -205,7 +205,7 @@ TEMPLATE;
                     $this->io->writeError('<error>Failed to create tmp file, make sure the current directory is writable</error>');
                     exit(1);
                 }
-                $dotenv = Dotenv\Dotenv::createMutable(getcwd(), $tmpfile);
+                $dotenv = Dotenv::createMutable(getcwd(), $tmpfile);
                 $tmpEnv = $dotenv->load();
                 unlink($tmpfile);
 
@@ -282,7 +282,7 @@ TEMPLATE;
                 return;
             }
 
-            $dotenv = Dotenv\Dotenv::createMutable('/', realpath($this->defaultsFile));
+            $dotenv = Dotenv::createMutable(dirname($this->defaultsFile), basename($this->defaultsFile));
             $this->defaults = $dotenv->load();
         }
     }
@@ -315,7 +315,7 @@ TEMPLATE;
             $this->io->writeError('<error>Failed to create tmp file, make sure the current directory is writable</error>');
             exit(1);
         }
-        $dotenv = Dotenv\Dotenv::createMutable(getcwd(), $tmpfile);
+        $dotenv = Dotenv::createMutable(getcwd(), $tmpfile);
         $this->pinnedKeys = $dotenv->load();
         unlink($tmpfile);
     }
