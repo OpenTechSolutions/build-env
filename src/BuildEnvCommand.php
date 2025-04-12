@@ -34,17 +34,19 @@ class BuildEnvCommand extends BaseCommand
     {
         $this->input = $input;
         $this->io = $this->getIO();
-        
+
         $this->readEnvExample();
 
         if ($this->input->getOption('setup')) {
             $this->setupEnvExample();
-            return;
+            return 0;
         }
 
         $this->getDefaults();
         $this->getPinnedValues();
         $this->buildEnv();
+
+        return 0;
     }
 
     protected function setupEnvExample()
